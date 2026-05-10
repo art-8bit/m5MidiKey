@@ -480,7 +480,7 @@ void drawMenu() {
     canvas.setTextColor(C_GRAY_DK);
     canvas.setCursor(3, SCREEN_H - 8);
     canvas.setTextSize(1);
-    canvas.print("';'/'.':nav  ','/'/':val  Enter:play");
+    canvas.print("I/K:nav  J/L:val  Enter:play");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -731,26 +731,29 @@ void loop() {
     // ════════════════════════════════════════════════════════════
     else /* MODE_PLAY */ {
         
+        bool pianoChanged = false;
+
+        // ✅ ИСПРАВЛЕНО: Вычисляем isChange() один раз!
+        bool kbdChanged = M5Cardputer.Keyboard.isChange();
+
         // Backspace → выход в меню
-        if (M5Cardputer.Keyboard.isChange() &&
+        bool backspacePressed = kbdChanged &&
             (M5Cardputer.Keyboard.isKeyPressed('\b') ||
              M5Cardputer.Keyboard.isKeyPressed(0x7F) ||
-             M5Cardputer.Keyboard.isKeyPressed(KEY_BACKSPACE)))
-        {
+             M5Cardputer.Keyboard.isKeyPressed(KEY_BACKSPACE));
+
+        if (backspacePressed) {
             panicAllNotesOff();
             appMode    = MODE_MENU;
             needRedraw = true;
             Serial.println("[APP] Back to Menu");
-            delay(20);
-            return;
         }
 
-        bool pianoChanged = false;
-
-        // ══════════════════════════════════════════════════
+        // ══════════════════════════════════════════════════════
         //  ВСТРОЕННАЯ КЛАВИАТУРА
-        // ══════════════════════════════════════════════════
-        if (M5Cardputer.Keyboard.isChange() && (gKbdSource == 0 || gKbdSource == 2)) {
+        // ══════════════════════════════════════════════════════
+        // ✅ ИСПРАВЛЕНО: Используем сохраненное значение kbdChanged
+        if (!backspacePressed && kbdChanged && (gKbdSource == 0 || gKbdSource == 2)) {
 
             for (int i = 0; i < WK_COUNT; i++) {
                 uint8_t k   = WHITE_KEYS[i].key;
@@ -809,9 +812,9 @@ void loop() {
             if (pianoChanged) needRedraw = true;
         }
 
-        // ══════════════════════════════════════════════════
+        // ══════════════════════════════════════════════════════
         //  МАТРИЧНАЯ КЛАВИАТУРА
-        // ══════════════════════════════════════════════════
+        // ══════════════════════════════════════════════════════
         if (matrixChanged && (gKbdSource == 1 || gKbdSource == 2)) {
 
             for (int row = 0; row < MATRIX_ROWS; row++) {
