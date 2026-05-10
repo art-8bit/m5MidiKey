@@ -480,7 +480,7 @@ void drawMenu() {
     canvas.setTextColor(C_GRAY_DK);
     canvas.setCursor(3, SCREEN_H - 8);
     canvas.setTextSize(1);
-    canvas.print("I/K:nav  J/L:val  Enter:play");
+    canvas.print("';'/'.':nav  ','/'/':val  Enter:play");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -662,12 +662,12 @@ void loop() {
             bool debounceOk = (now - lastNavMs >= NAV_DEBOUNCE);
 
             if (debounceOk) {
-                if (M5Cardputer.Keyboard.isKeyPressed('i')) {
+                if (M5Cardputer.Keyboard.isKeyPressed(';')) {
                     menuSel    = (menuSel - 1 + MN_COUNT) % MN_COUNT;
                     lastNavMs  = now;
                     needRedraw = true;
                 }
-                if (M5Cardputer.Keyboard.isKeyPressed('k')) {
+                if (M5Cardputer.Keyboard.isKeyPressed('.')) {
                     menuSel    = (menuSel + 1) % MN_COUNT;
                     lastNavMs  = now;
                     needRedraw = true;
@@ -676,8 +676,8 @@ void loop() {
 
             if (debounceOk) {
                 int dir = 0;
-                if (M5Cardputer.Keyboard.isKeyPressed('j')) dir = -1;
-                if (M5Cardputer.Keyboard.isKeyPressed('l')) dir = +1;
+                if (M5Cardputer.Keyboard.isKeyPressed(',')) dir = -1;
+                if (M5Cardputer.Keyboard.isKeyPressed('/')) dir = +1;
 
                 if (dir != 0) {
                     switch (menuSel) {
